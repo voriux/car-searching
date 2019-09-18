@@ -2,6 +2,8 @@
 
 namespace App;
 
+use ReflectionClass;
+
 class TextUtil
 {
     /**
@@ -28,23 +30,76 @@ class TextUtil
 
     /**
      * @param $text
-     * @return string
+     * @return int
      */
-    public function detectPrice($text): string
+    public function detectPrice($text): int
     {
         $text = str_replace(" ", "", $text);
         preg_match('/(.*)€[^€]/u', $text, $matches);
-        return $matches[1];
+        return (int)$matches[1];
+    }
+
+    /**
+     * @param $text
+     * @return int
+     */
+    public function detectVat($text): int
+    {
+        $text = str_replace(" ", "", $text);
+        preg_match('/\((.*)%PVM\)/', $text, $matches);
+        return (int)$matches[1];
     }
 
     /**
      * @param $text
      * @return string
      */
-    public function detectVat($text): string
+    public function detectProductionYear($text): string
     {
-        $text = str_replace(" ", "", $text);
-        preg_match('/\((.*)%PVM\)/', $text, $matches);
-        return $matches[1];
+        preg_match('/(\d{2})\/(\d{4}),/', $text, $matches);
+        return $matches[2].'-'.$matches[1];
+    }
+
+    /**
+     * @param $text
+     * @return int
+     */
+    public function detectPower($text): int
+    {
+        preg_match('/(\d*) Ag/', $text, $matches);
+        return round($matches[1] * 0.735499);
+    }
+
+    /**
+     * @param $text
+     * @return string
+     */
+    public function detectGearbox($text): string
+    {
+        return (strpos($text, 'aut') !== false)
+            ? 'Automatinė'
+            : 'Mechaninė';
+    }
+
+    /**
+     * @param $text
+     * @return string
+     */
+    public function detectBodyType($text): string
+    {
+        return (strpos($text, 'universalas') !== false)
+            ? 'Universalas'
+            : 'Sedanas';
+    }
+
+    /**
+     * @param $text
+     * @return string
+     */
+    public function detectFuel($text): string
+    {
+        return (strpos($text, 'benzinas') !== false)
+            ? 'Benzinas'
+            : 'Dyzelis';
     }
 }

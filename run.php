@@ -1,5 +1,6 @@
 <?php
 
+use App\Model\Car;
 use App\TextUtil;
 use Goutte\Client;
 use Symfony\Component\DomCrawler\Crawler;
@@ -19,10 +20,13 @@ $client->request('POST', 'https://naudotiauto.mollerauto.lt/lt/usedcars/search',
 ]);
 
 $csvHandle = fopen('results.csv', 'wb+');
-fputcsv($csvHandle, ['title', 'description', 'image', 'href', 'price', 'vat']);
+$emptyCar = new Car();
+fputcsv($csvHandle, $emptyCar->getAttributes());
 $contents = \json_decode($client->getResponse()->getContent());
 $domCrawler = new Crawler($contents->content);
 $pages = $domCrawler->filter('.pagination li a')->count();
+
+$detailCrawler = new Client;
 
 for ($page=1; $page<=$pages; $page++) {
 
@@ -34,28 +38,40 @@ for ($page=1; $page<=$pages; $page++) {
     /** @var DOMElement $item */
     foreach ($domCrawler->filter('.vehicle') as $item) {
         $crawler = new Crawler($item);
+        $car = new Car();
+
+        $description = $crawler->filter('.vehicledata')->first()->text();
 
 
-        $cars[$i]['title'] = $crawler->filter('.vehiclesummary')->text();
-        $cars[$i]['description'] = $crawler->filter('.vehicledata')->first()->text();
-        $cars[$i]['image'] = $textUtil->detectImage(
-            $crawler->filter('.image a')->attr('style'),
-            'https://naudotiauto.mollerauto.lt'
-        );
-        $cars[$i]['href'] = $textUtil->detectUrl(
-            $crawler->filter('.image a')->attr('href'),
-            'https://naudotiauto.mollerauto.lt'
-        );
 
-        $cars[$i]['price'] = $textUtil->detectPrice(
-            $crawler->filter('.vehicledata')->eq(1)->text()
-        );
+        $car
+            ->setTitle($crawler->filter('.vehiclesummary')->text())
+            ->setDescription($description)
+            ->setImage($textUtil->detectImage(
+                $crawler->filter('.image a')->attr('style'),
+                'https://naudotiauto.mollerauto.lt'
+            ))
+            ->setHref($textUtil->detectUrl(
+                $crawler->filter('.image a')->attr('href'),
+                'https://naudotiauto.mollerauto.lt'
+            ))
+            ->setPrice($textUtil->detectPrice(
+                $crawler->filter('.vehicledata')->eq(1)->text()
+            ))
+            ->setVat($textUtil->detectVat(
+                $crawler->filter('.vehicledata')->eq(1)->text()
+            ))
+            ->setProductionYear($textUtil->detectProductionYear($description))
+            ->setPower($textUtil->detectPower($description))
+            ->setGearbox($textUtil->detectGearbox($description))
+            ->setBodyType($textUtil->detectBodyType($description))
+            ->setFuel($textUtil->detectFuel($description));
 
-        $cars[$i]['vat'] = $textUtil->detectVat(
-            $crawler->filter('.vehicledata')->eq(1)->text()
-        );
+        // $detailCrawler->request('GET', $car->getHref());
+        // $a = $detailCrawler->getCrawler()->filter('.datatable:eq(1)')->text();
+        // echo $a; die;
 
-        fputcsv($csvHandle, $cars[$i]);
+        fputcsv($csvHandle, $car->toArray());
         $i++;
     }
 }
