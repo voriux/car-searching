@@ -33,7 +33,7 @@ class TextUtil
     public function detectPrice($text): string
     {
         $text = str_replace(" ", "", $text);
-        preg_match('/(.*)€/u', $text, $matches);
+        preg_match('/(.*)€[^€]/u', $text, $matches);
         return $matches[1];
     }
 
