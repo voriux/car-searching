@@ -35,7 +35,7 @@ for ($page=1; $page<=$pages; $page++) {
     ]);
     $contents = \json_decode($client->getResponse()->getContent());
     $domCrawler = new Crawler($contents->content);
-    /** @var DOMElement $item */
+    /** @var \DOMElement $item */
     foreach ($domCrawler->filter('.vehicle') as $item) {
         $crawler = new Crawler($item);
         $car = new Car();
