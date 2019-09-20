@@ -67,9 +67,14 @@ for ($page=1; $page<=$pages; $page++) {
             ->setBodyType($textUtil->detectBodyType($description))
             ->setFuel($textUtil->detectFuel($description));
 
-        // $detailCrawler->request('GET', $car->getHref());
-        // $a = $detailCrawler->getCrawler()->filter('.datatable:eq(1)')->text();
-        // echo $a; die;
+        $detailCrawler->request('GET', $car->getHref());
+        $a = $detailCrawler
+            ->getCrawler()
+            ->filter('.datatable')
+            ->eq(1)
+            ->filter('tr:nth-child(2) > td');
+
+        $car->setKm($textUtil->detectKm($a->text()));
 
         fputcsv($csvHandle, $car->toArray());
         $i++;

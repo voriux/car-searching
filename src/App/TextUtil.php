@@ -102,4 +102,13 @@ class TextUtil
             ? 'Benzinas'
             : 'Dyzelis';
     }
+
+    /**
+     * @param $text
+     * @return string
+     */
+    public function detectKm($text): string
+    {
+        return str_replace(['km', ' '], '', $text);
+    }
 }
