@@ -1,8 +1,6 @@
 <?php
 
-namespace App;
-
-use ReflectionClass;
+namespace App\Collector\MollerAuto;
 
 class TextUtil
 {

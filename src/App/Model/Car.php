@@ -37,6 +37,11 @@ class Car
     protected $vat;
 
     /**
+     * @var int
+     */
+    protected $finalPrice;
+
+    /**
      * @var string
      */
     protected $productionYear;
@@ -292,6 +297,22 @@ class Car
         $this->km = $km;
 
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFinalPrice(): int
+    {
+        return $this->finalPrice;
+    }
+
+    /**
+     * @param int $finalPrice
+     */
+    public function setFinalPrice(int $finalPrice): void
+    {
+        $this->finalPrice = $finalPrice;
     }
 
     /**
