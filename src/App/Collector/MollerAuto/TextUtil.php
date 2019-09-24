@@ -109,4 +109,15 @@ class TextUtil
     {
         return str_replace(['km', ' '], '', $text);
     }
+
+    /**
+     * @param $text
+     * @return string
+     */
+    public function detectExternalId($text): string
+    {
+        $pattern = '/lt\/vehicle\/(\d*)\//';
+        preg_match($pattern, $text, $matches);
+        return $matches[1];
+    }
 }

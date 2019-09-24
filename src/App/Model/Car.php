@@ -72,6 +72,11 @@ class Car
     protected $km;
 
     /**
+     * @var string
+     */
+    protected $externalId;
+
+    /**
      * @return string
      */
     public function getTitle(): string
@@ -309,10 +314,33 @@ class Car
 
     /**
      * @param int $finalPrice
+     *
+     * @return Car
      */
-    public function setFinalPrice(int $finalPrice): void
+    public function setFinalPrice(int $finalPrice): self
     {
         $this->finalPrice = $finalPrice;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getExternalId(): ?string
+    {
+        return $this->externalId;
+    }
+
+    /**
+     * @param string $externalId
+     * @return Car
+     */
+    public function setExternalId(string $externalId): Car
+    {
+        $this->externalId = $externalId;
+
+        return $this;
     }
 
     /**

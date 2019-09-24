@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Collector;
+namespace App\Collector\MollerAuto;
 
-use App\Collector\MollerAuto\TextUtil;
+use App\Collector\CollectorInterface;
 use App\Model\Car;
 use Goutte\Client;
 use Symfony\Component\DomCrawler\Crawler;
@@ -68,7 +68,7 @@ class MollerAuto implements CollectorInterface
 
         for ($page=1; $page<=$pages; $page++) {
 
-            $this->client->request('POST', 'https://naudotiauto.mollerauto.lt/lt/usedcars/search', [
+            $this->client->request('POST', $this->url, [
                 'page' => $page,
             ]);
             $contents = \json_decode($this->client->getResponse()->getContent());
@@ -112,6 +112,7 @@ class MollerAuto implements CollectorInterface
 
                 $car->setKm($this->textUtil->detectKm($a->text()));
                 $car->setFinalPrice(round((1+(21-$car->getVat())/100)*$car->getPrice()));
+                $car->setExternalId($this->textUtil->detectExternalId($car->getHref()));
 
                 $cars[] = $car;
             }

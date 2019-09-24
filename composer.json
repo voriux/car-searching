@@ -2,7 +2,8 @@
     "require": {
         "symfony/panther": "^0.5.2",
         "fabpot/goutte": "^3.2",
-        "ext-dom": "*"
+        "ext-dom": "*",
+        "symfony/console": "^4.3"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master"
