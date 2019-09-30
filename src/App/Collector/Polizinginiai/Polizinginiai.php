@@ -70,43 +70,39 @@ class Polizinginiai implements CollectorInterface
         $cars = [];
 
         $this->client->request('GET', $this->getUrl());
-
-        // $contents = \json_decode($this->client->getResponse()->getContent());
         $domCrawler = new Crawler($this->client->getResponse()->getContent());
 
-        $detailCrawler = clone $this->client;
-
-        foreach ($domCrawler->filter('.search-rezultatai .automobilis') as $item) {
+        foreach ($domCrawler->filter('.newest__usedcars .car__info') as $item) {
             $car = new Car();
             $crawler = new Crawler($item);
             $car
                 ->setTitle(
-                    $this->textUtil->detectTitle($crawler->filter('.automobilis-info h2')->text())
+                    $this->textUtil->detectTitle($crawler->filter('.car__detail h4')->text())
                 )
                 ->setDescription('')
                 ->setImage('')
                 ->setHref($this->textUtil->detectHref($crawler->filter('a')->attr('href')))
                 ->setPrice($this->textUtil->detectPrice(
-                    $crawler->filter('.bazine-kaina span')->text()
+                    $crawler->filter('.car__price .price__inner')->text()
                 ))
                 ->setVat(21)
                 ->setFinalPrice($this->textUtil->detectPrice(
-                    $crawler->filter('.bazine-kaina span')->text()
+                    $crawler->filter('.car__price .price__inner')->text()
                 ))
-                ->setProductionYear(trim($crawler->filter('.info-juostele span')->eq(0)->text()))
-                ->setPower(0)
-                ->setGearbox(trim($crawler->filter('.info-juostele span')->eq(4)->text()))
-                ->setBodyType('N/A')
-                ->setFuel($this->textUtil->detectFuel($crawler->filter('.info-juostele span')->eq(2)->text()))
-                ->setKm((int)trim($crawler->filter('.info-juostele span')->eq(3)->text()));
-
-            $detailCrawler->request('GET', $car->getHref());
-            $detailInfo = $detailCrawler
-                ->getCrawler()
-                ->filter('div.auto-info > div.table > div:nth-child(5) > span.value > span')
-                ->text();
-
-            $car->setPower($this->textUtil->detectPower($detailInfo));
+                ->setProductionYear(trim($crawler->filter('.car__detail .car__date')->eq(0)->text()))
+                ->setPower($this->textUtil->detectPower(
+                    $crawler->filter('.car__detail .power__info')->text()
+                ))
+                ->setGearbox(trim($crawler->filter('.car__about .rightinfo .gear__info span')->text()))
+                ->setBodyType($this->textUtil->detectBodyType(
+                    $crawler->filter('.car__about .rightinfo .type__info span')->text()
+                ))
+                ->setFuel($this->textUtil->detectFuel(
+                    $crawler->filter('.car__about .leftinfo .gas__info span')->text())
+                )
+                ->setKm($this->textUtil->detectKm(
+                    $crawler->filter('.car__about .rightinfo .speed__info span')->text()
+                ));
 
             $cars[] = $car;
         }

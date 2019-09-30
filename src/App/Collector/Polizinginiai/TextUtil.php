@@ -50,7 +50,7 @@ class TextUtil
     public function detectPower($text): int
     {
         $text = trim($text);
-        $regexp = '/(\d*)\skW/';
+        $regexp = '/(\d*)kW/';
         preg_match($regexp, $text, $matches);
         return (int)$matches[1];
     }
@@ -65,5 +65,25 @@ class TextUtil
         return (stripos($text, 'benzinas') !== false)
             ? 'Benzinas'
             : 'Dyzelis';
+    }
+
+    /**
+     * @param $text
+     * @return string
+     */
+    public function detectBodyType($text): string
+    {
+        return (stripos($text, 'universalas') !== false)
+            ? 'Universalas'
+            : 'Sedanas';
+    }
+
+    /**
+     * @param $text
+     * @return int
+     */
+    public function detectKm($text): int
+    {
+        return (int)str_replace([' ', 'km'], '', $text);
     }
 }
