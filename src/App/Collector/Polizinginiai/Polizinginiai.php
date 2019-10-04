@@ -69,6 +69,8 @@ class Polizinginiai implements CollectorInterface
     {
         $cars = [];
 
+        $detailCrawler = clone $this->client;
+
         $this->client->request('GET', $this->getUrl());
         $domCrawler = new Crawler($this->client->getResponse()->getContent());
 
@@ -103,6 +105,15 @@ class Polizinginiai implements CollectorInterface
                 ->setKm($this->textUtil->detectKm(
                     $crawler->filter('.car__about .rightinfo .speed__info span')->text()
                 ));
+
+            $detailCrawler->request('GET', $car->getHref());
+            $detailInfo = $detailCrawler->getCrawler();
+
+            $car->setProductionYear(
+                $detailInfo
+                    ->filter('#tab-1 > div > div.innertabs__bottom.clearfix > div:nth-child(2)')
+                    ->text()
+            );
 
             $cars[] = $car;
         }
