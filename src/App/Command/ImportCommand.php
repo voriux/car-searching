@@ -28,10 +28,10 @@ class ImportCommand extends Command
 
         /** @var CollectorInterface[] $collectors */
         $collectors = [
-            new MollerAuto(new Client(), '10002898', '10002918'),
+            // new MollerAuto(new Client(), '10002898', '10002918'),
             new MollerAuto(new Client(), '10002898', '10002928'),
-            new Polizinginiai(new Client(),'volkswagen', 'passat'),
-            new DasWeltAuto(new Client(), '10002898', '10002918')
+            // new Polizinginiai(new Client(),'volkswagen', 'passat'),
+            new DasWeltAuto(new Client(), '10002898', '10002928')
         ];
 
         $cars = new CarCollection();
